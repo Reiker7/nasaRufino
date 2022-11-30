@@ -2,53 +2,67 @@ const Landing = require('../models/landing')
 const express = require('express')
 const router = express.Router()
 
-router.get('/', async (req,res) =>{
-    if(!Object.keys(req.query).length) return res.status(400).send("campo sin valor")
+router.get('/', async (req, res) => {
+    if (!Object.keys(req.query).length) return res.status(400).send("campo sin valor")
 
-    const result = await Landing.find({"$expr" : {"$gt" : [{"$toDecimal" :"$mass"} , +req.query.minimum_mass]}})
-    
-    .select('name mass')
-    
-    res.send(result)
-    //{year: {$regex: /1960/}}
+    else if (req.query.minimum_mass) {
+        const result = await Landing.find({ "$expr": { "$gt": [{ "$toDecimal": "$mass" }, +req.query.minimum_mass] } })
+            .select('name mass')
+        res.send(result)
+    } else if (req.query.to && req.query.from) {
+
+        const result = await Landing.find({ year: { $gte: +req.query.from , $lte: +req.query.to} })
+            .select('name mass year')
+        res.send(result)
+    } else if (req.query.from) {
+
+        const result = await Landing.find({ year: { $gt: +req.query.from } })
+            .select('name mass year')
+        res.send(result)
+    } else if (req.query.to) {
+
+        const result = await Landing.find({ year: { $lt: +req.query.to } })
+            .select('name mass year')
+        res.send(result)
+    }
+
 })
-router.get('/mass/:mass', async (req,res) =>{
-    
-    const result = await Landing.find({"$expr" : {"$eq" : [{"$toDecimal" :"$mass"} , +req.params.mass]}})
-    .select('name mass')
-    
+router.get('/mass/:mass', async (req, res) => {
+
+    const result = await Landing.find({ "$expr": { "$eq": [{ "$toDecimal": "$mass" }, +req.params.mass] } })
+        .select('name mass')
+
     res.send(result)
-    
-})
-router.get('/class/:class', async (req,res) =>{
 
-    const result = await Landing.find({recclass: req.params.class})
-    .select('name recclass')
-    
+})
+router.get('/class/:class', async (req, res) => {
+
+    const result = await Landing.find({ recclass: req.params.class })
+        .select('name recclass')
+
     res.send(result)
-    
+
 })
 
 
+router.post('/', async (req, res) => {
+    const landing = new Landing(req.body)
+    console.log(landing)
+    const newLanding = await landing.save()
 
-// router.post('/', async (req, res) => {
-//     const movie = new Movie(req.body)
+    res.send(newLanding)
+})
 
-//     const newMovie = await movie.save()
+router.put('/:id', async (req, res) => {
+    const landing = await Landing.findOneAndUpdate({ id: req.params.id }, req.body)
+    console.log(req.params.id)
+    res.send(landing)
+})
 
-//     res.send(newMovie)
-// })
+router.delete('/:id', async (req, res) => {
+    const landing = await Landing.findOneAndDelete({ id: req.params.id })
 
-// router.put('/:id', async (req, res) => {
-//     const movie = await Movie.findOneAndUpdate({_id: req.params.id}, req.body)
-
-//     res.send(movie)
-// })
-
-// router.delete('/:id', async (req, res) => {
-//     const movie = await Movie.findOneAndDelete({_id: req.params.id})
-
-//     res.send(movie)
-// })
+    res.send(landing)
+})
 
 module.exports = router

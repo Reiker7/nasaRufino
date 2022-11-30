@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const neasSchema = new mongoose.Schema({
   designation:  String, 
   price: String,
-  discovery_date: Date,
+  discovery_date: String,
   h_mag:   String,
   moid_au: String,
   q_au_1: String,
