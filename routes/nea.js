@@ -4,9 +4,9 @@ const router = express.Router()
 
 router.get('/', async (req,res) =>{
 
-    if (!Object.keys(req.query).length) return res.status(400).send("campo sin valor")
+    if (!Object.keys(req.query).length){ return res.status(400).send("campo sin valor")
     
-    else if (req.query.class) {
+    }else if (req.query.class) {
   
     const result = await Nea.find({$expr: { $eq: [{ $toLower: "$orbit_class" }, { $toLower: req.query.class}] } })
     .select('designation period_yr')
@@ -50,10 +50,6 @@ router.delete('/:designat', async (req, res) => {
 
     res.send(result)
 })
-// router.get('/test', async (req,res) =>{
 
-//     let prueba = "2014 CY4"
-//     const result = await Nea.find({designation: `(${prueba})`})
-//     res.send(result)
-// })
+
 module.exports = router

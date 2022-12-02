@@ -3,9 +3,9 @@ const express = require('express')
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-    if (!Object.keys(req.query).length) return res.status(400).send("campo sin valor")
+    if (!Object.keys(req.query).length){ return res.status(400).send("campo sin valor")
 
-    else if (req.query.minimum_mass) {
+    }else if (req.query.minimum_mass) {
         const result = await Landing.find({ "$expr": { "$gt": [{ "$toDecimal": "$mass" }, +req.query.minimum_mass] } })
             .select('name mass')
         res.send(result)
