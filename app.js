@@ -10,7 +10,7 @@ app.use(express.json())
 
 app.use('/api/astronomy/landings', landing)
 app.use('/api/astronomy/neas', nea)
-app.use('/api/user', user)
+app.use('/api/users', user)
 
 app.get('/ping', (req, res) => {
     res.send('pong')
